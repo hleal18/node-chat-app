@@ -3,3 +3,26 @@ console.log(__dirname + '/../public');
 Ahora, con un paquete (path) que viene con npm que mejora la legibilidad de las rutas:
 const publicPath = path.join(__dirname, '../public');
 console.log(publicPath)
+
+Se integra socketio, lo cual se configura para que el servidor establezca
+conexión con el cliente y viceversa, de forma que sea persistente.
+Se puede enviar datos de un sentido a otro.
+
+Scoketio tiene backend y frontend libraries.
+
+Cuando se configura socketio con el server, se puede ver que en el cliente
+automáticamente se cargan funciones javascript que permitirán mantener la
+persistencia y comunicación entre el cliente y el servidor.
+Está disponible en la ruta:
+localhost:3000/socket.io/socket.io.js
+Ese script se carga en el index.html
+
+Los eventos son las acciones que se transmiten y de acuerdo al destino, debe
+estar escuchando para poder recibir aquel evento que se emitió
+
+Los Web sockets mantienen el canal de comunicación abierto y se mantiene un
+flujo de conexión.
+Si se desconecta alguno, se pierde la comunicación.
+Cuando sucede el caso de que el servidor se cae, el cliente lo nota y trata
+de reestablecer la conexión, y cuando lo hace, los canales de comunicación
+se reabren.
