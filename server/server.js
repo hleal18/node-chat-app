@@ -36,15 +36,17 @@ io.on('connection', (socket) => {
   //Se emite un evento al cliente.
   //El evento se crea ahí mismo.
   //Se puede emitir un evento sin datos.
-  socket.emit('newEmail', {
-    from: 'Mike',
-    text: 'Hey what is going on.',
-    createdAt: 123
+
+  //Emitir un evento newMessage con from, text y createdAt
+  socket.emit('newMessage', {
+    from: 'Humberto',
+    text: 'Hey prro',
+    createdAt: Date.now()
   });
 
-  //Se escucha un evento proporcionado por el cliente
-  socket.on('createEmail', (newEmail) => {
-    console.log('createEmail', newEmail);
+  //Escuchar un evento createMessage con from, text y crear createdAt
+  socket.on('createMessage', (message) => {
+    console.log('createMessage', message);
   });
 
   //registra un listener que se acciona cuando un cliente se desconecta

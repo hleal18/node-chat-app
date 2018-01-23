@@ -8,10 +8,11 @@ var socket = io();
 //a un servidor.
 socket.on('connect', function () {
   console.log('Connected to server');
-  //Se emite un evento con un email cuando se concreta la conexión.
-  socket.emit('createEmail', {
-    to: 'jen@example.com',
-    text: 'Hey. This is andrew'
+
+  //Emitir un evento, createMessage con datos del texto
+  socket.emit('createMessage', {
+    from: 'Cuchicuchi',
+    text: 'EquisDe'
   });
 });
 
@@ -22,7 +23,8 @@ socket.on('disconnect', function () {
 });
 
 //Custom events
-//Se recibe información a partir del evento que se emitió desde el servidor
-socket.on('newEmail', function (email) {
-  console.log('New Email', email);
+
+//Escuchar un evento: newMessage e imprimir la información del mensaje
+socket.on('newMessage', function(message) {
+  console.log('newMessage', message);
 });
