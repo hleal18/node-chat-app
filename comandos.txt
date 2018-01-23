@@ -1,0 +1,5 @@
+Antes:
+console.log(__dirname + '/../public');
+Ahora, con un paquete (path) que viene con npm que mejora la legibilidad de las rutas:
+const publicPath = path.join(__dirname, '../public');
+console.log(publicPath)
