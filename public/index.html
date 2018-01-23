@@ -7,24 +7,6 @@
   <body>
     <p>Welcome to the chat app</p>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      //Lo provee socket.io
-      //Se inicia la petición al servidor para comenzar la conexión
-      //WebSocket y mantenerla iniciada.
-      //Guarda el Socket en la variable, crítica para la comunicación.
-      var socket = io();
-
-      //connect permite establecer una acción cuando se conecta el cliente
-      //a un servidor.
-      socket.on('connect', () => {
-        console.log('Connected to server');
-      });
-
-      //Se añade listener a un evento que se acciona cuando se ocurre una
-      //desconexión con el servidor
-      socket.on('disconnect', () => {
-        console.log('Disconnected from server');
-      })
-    </script>
+    <script src="/js/index.js"></script>
   </body>
 </html>

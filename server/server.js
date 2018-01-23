@@ -33,6 +33,20 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('New user connected');
 
+  //Se emite un evento al cliente.
+  //El evento se crea ahí mismo.
+  //Se puede emitir un evento sin datos.
+  socket.emit('newEmail', {
+    from: 'Mike',
+    text: 'Hey what is going on.',
+    createdAt: 123
+  });
+
+  //Se escucha un evento proporcionado por el cliente
+  socket.on('createEmail', (newEmail) => {
+    console.log('createEmail', newEmail);
+  });
+
   //registra un listener que se acciona cuando un cliente se desconecta
   socket.on('disconnect', () => {
     console.log('User was disconnected');
