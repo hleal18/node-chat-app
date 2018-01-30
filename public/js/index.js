@@ -10,10 +10,10 @@ socket.on('connect', function () {
   console.log('Connected to server');
 
   //Emitir un evento, createMessage con datos del texto
-  socket.emit('createMessage', {
-    from: 'Cuchicuchi',
-    text: 'EquisDe'
-  });
+  // socket.emit('createMessage', {
+  //   from: 'Cuchicuchi',
+  //   text: 'EquisDe'
+  // });
 });
 
 //Se añade listener a un evento que se acciona cuando se ocurre una

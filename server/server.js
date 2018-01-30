@@ -37,12 +37,26 @@ io.on('connection', (socket) => {
   //El evento se crea ahí mismo.
   //Se puede emitir un evento sin datos.
 
-  //Emitir un evento newMessage con from, text y createdAt
+  //Se emite un evento para la conexión actual haciéndole bienvenida
   socket.emit('newMessage', {
-    from: 'Humberto',
-    text: 'Hey prro',
-    createdAt: Date.now()
+    from: 'Admin',
+    text: 'Welcome to the chat app',
+    createdAt: new Date().getTime()
   });
+
+  //Se emite un evento para todos los demás sockets menos el actual.
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user joined',
+    createdAt: new Date().getTime()
+  });
+
+  //Emitir un evento newMessage con from, text y createdAt
+  // socket.emit('newMessage', {
+  //   from: 'Humberto',
+  //   text: 'Hey prro',
+  //   createdAt: Date.now()
+  // });
 
   //Escuchar un evento createMessage con from, text y crear createdAt
   socket.on('createMessage', (message) => {
@@ -50,6 +64,9 @@ io.on('connection', (socket) => {
     //io emite eventos a todas las conexiones, a diferencia de socket
     //que lo hace para una conexión
     io.emit('newMessage', {...message, createdAt: new Date().getTime()});
+    //Envía mensajes a todos menos al socket que representa la conexión propia.
+    //socket.broadcast.emit('newMessage', {..message, createdAt: new Date().getTime()});
+
   });
 
   //registra un listener que se acciona cuando un cliente se desconecta
