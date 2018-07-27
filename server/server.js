@@ -7,6 +7,8 @@ const socketIO = require('socket.io');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
+const { generateMessage } = require('./utils/message.js');
+
 //Crear express app
 var app = express();
 //En la implementación de express, él usa este paquete y el mismo método
@@ -31,48 +33,40 @@ app.use(express.static(publicPath));
 //y socket representa una conexión realizada por medio del socket, más no
 //todos los sockets o conexiones simultanes que tiene el servidor.
 io.on('connection', (socket) => {
-  console.log('New user connected');
+    console.log('New user connected');
 
-  //Se emite un evento al cliente.
-  //El evento se crea ahí mismo.
-  //Se puede emitir un evento sin datos.
+    //Se emite un evento al cliente.
+    //El evento se crea ahí mismo.
+    //Se puede emitir un evento sin datos.
 
-  //Se emite un evento para la conexión actual haciéndole bienvenida
-  socket.emit('newMessage', {
-    from: 'Admin',
-    text: 'Welcome to the chat app',
-    createdAt: new Date().getTime()
-  });
+    //Se emite un evento para la conexión actual haciéndole bienvenida
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
-  //Se emite un evento para todos los demás sockets menos el actual.
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'New user joined',
-    createdAt: new Date().getTime()
-  });
+    //Se emite un evento para todos los demás sockets menos el actual.
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
-  //Emitir un evento newMessage con from, text y createdAt
-  // socket.emit('newMessage', {
-  //   from: 'Humberto',
-  //   text: 'Hey prro',
-  //   createdAt: Date.now()
-  // });
+    //Emitir un evento newMessage con from, text y createdAt
+    // socket.emit('newMessage', {
+    //   from: 'Humberto',
+    //   text: 'Hey prro',
+    //   createdAt: Date.now()
+    // });
 
-  //Escuchar un evento createMessage con from, text y crear createdAt
-  socket.on('createMessage', (message) => {
-    console.log('createMessage', message);
-    //io emite eventos a todas las conexiones, a diferencia de socket
-    //que lo hace para una conexión
-    io.emit('newMessage', {...message, createdAt: new Date().getTime()});
-    //Envía mensajes a todos menos al socket que representa la conexión propia.
-    //socket.broadcast.emit('newMessage', {..message, createdAt: new Date().getTime()});
+    //Escuchar un evento createMessage con from, text y crear createdAt
+    socket.on('createMessage', (message) => {
+        console.log('createMessage', message);
+        //io emite eventos a todas las conexiones, a diferencia de socket
+        //que lo hace para una conexión
+        io.emit('newMessage', generateMessage(message.from, message.text));
+        //Envía mensajes a todos menos al socket que representa la conexión propia.
+        //socket.broadcast.emit('newMessage', {..message, createdAt: new Date().getTime()});
 
-  });
+    });
 
-  //registra un listener que se acciona cuando un cliente se desconecta
-  socket.on('disconnect', () => {
-    console.log('User was disconnected');
-  });
+    //registra un listener que se acciona cuando un cliente se desconecta
+    socket.on('disconnect', () => {
+        console.log('User was disconnected');
+    });
 });
 
 //Configurar ruta para servir la página
@@ -80,5 +74,5 @@ io.on('connection', (socket) => {
 
 //Ahora se escucha el servidor, es parte de configurar socketio
 server.listen(port, () => {
-  console.log('Server is up on', port);
+    console.log('Server is up on', port);
 });
