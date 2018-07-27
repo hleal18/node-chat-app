@@ -60,12 +60,12 @@ io.on('connection', (socket) => {
         io.emit('newMessage', generateMessage(message.from, message.text));
         //Internamente enviará un evento al cliente para que se invocque 
         //correctamente el callback
-        callback('This is from the server');
+        callback();
         //Envía mensajes a todos menos al socket que representa la conexión propia.
         //socket.broadcast.emit('newMessage', {..message, createdAt: new Date().getTime()});
     });
 
-    socket.on('createLocationMessage', (coords, callback) => {
+    socket.on('createLocationMessage', (coords) => {
         console.log('CreateLocationMessage', coords);
         io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
     })
