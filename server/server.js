@@ -53,14 +53,16 @@ io.on('connection', (socket) => {
     // });
 
     //Escuchar un evento createMessage con from, text y crear createdAt
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('createMessage', message);
         //io emite eventos a todas las conexiones, a diferencia de socket
         //que lo hace para una conexión
         io.emit('newMessage', generateMessage(message.from, message.text));
+        //Internamente enviará un evento al cliente para que se invocque 
+        //correctamente el callback
+        callback('This is from the server');
         //Envía mensajes a todos menos al socket que representa la conexión propia.
         //socket.broadcast.emit('newMessage', {..message, createdAt: new Date().getTime()});
-
     });
 
     //registra un listener que se acciona cuando un cliente se desconecta
