@@ -4,6 +4,22 @@
 //Guarda el Socket en la variable, crítica para la comunicación.
 var socket = io();
 
+function scrollToBottom() {
+    //Selectors
+    const messages = jQuery('#messages');
+    const newMessage = messages.children('li:last-child');
+    //Height
+    const clientHeight = messages.prop('clientHeight');
+    const scrollTop = messages.prop('scrollTop');
+    const scrollHeight = messages.prop('scrollHeight');
+    const newMessageHeight = newMessage.innerHeight();
+    const lastMessageHeight = newMessage.prev().innerHeight();
+
+    if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight>= scrollHeight) {
+        messages.scrollTop(scrollHeight);
+    }
+}
+
 //connect permite establecer una acción cuando se conecta el cliente
 //a un servidor.
 socket.on('connect', function () {
@@ -26,7 +42,6 @@ socket.on('disconnect', function () {
 
 //Escuchar un evento: newMessage e imprimir la información del mensaje
 socket.on('newMessage', function (message) {
-    console.log('newMessage', message);
     const formattedTime = moment(message.createdAt).format('h:mm a');
     const template = jQuery('#message-template').html();
     const html = Mustache.render(template, {
@@ -35,11 +50,23 @@ socket.on('newMessage', function (message) {
         createdAt: formattedTime
     });
     jQuery('#messages').append(html);
+    scrollToBottom();
+});
+
+socket.on('newLocationMessage', function (message) {
+    const formattedTime = moment(message.createdAt).format('h:mm a');
+    const template = jQuery('#location-message-template').html();
+    const html = Mustache.render(template, {
+        url: message.url,
+        from: message.from,
+        createdAt: formattedTime
+    });
+    jQuery('#messages').append(html);
+    scrollToBottom();
 });
 
 jQuery('#message-form').on('submit', function (e) {
     e.preventDefault();
-    console.log('Funcion ejecutada');
 
     const messageTextBox = jQuery('[name=message]');
 
@@ -69,15 +96,4 @@ locationButton.on('click', function () {
         locationButton.removeAttr('disabled').text('Sendo location');
         alert('Unable to fetch location');
     })
-});
-
-socket.on('newLocationMessage', function (message) {
-    const formattedTime = moment(message.createdAt).format('h:mm a');
-    const template = jQuery('#location-message-template').html();
-    const html = Mustache.render(template, {
-        url: message.url,
-        from: message.from,
-        createdAt: formattedTime
-    });
-    jQuery('#messages').append(html);
 });
