@@ -7,7 +7,7 @@ const socketIO = require('socket.io');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
-const { generateMessage } = require('./utils/message.js');
+const { generateMessage, generateLocationMessage } = require('./utils/message.js');
 
 //Crear express app
 var app = express();
@@ -64,6 +64,11 @@ io.on('connection', (socket) => {
         //Envía mensajes a todos menos al socket que representa la conexión propia.
         //socket.broadcast.emit('newMessage', {..message, createdAt: new Date().getTime()});
     });
+
+    socket.on('createLocationMessage', (coords, callback) => {
+        console.log('CreateLocationMessage', coords);
+        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+    })
 
     //registra un listener que se acciona cuando un cliente se desconecta
     socket.on('disconnect', () => {
