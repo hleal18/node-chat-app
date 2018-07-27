@@ -28,17 +28,14 @@ socket.on('disconnect', function () {
 socket.on('newMessage', function (message) {
     console.log('newMessage', message);
     const formattedTime = moment(message.createdAt).format('h:mm a');
-    const li = jQuery('<li></li>');
-    li.text(`${message.from} ${formattedTime}: ${message.text}`);
-
-    jQuery('#messages').append(li);
+    const template = jQuery('#message-template').html();
+    const html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+    });
+    jQuery('#messages').append(html);
 });
-
-// //para usar acks con socketIO, se le pasa un callback como tercer argumento que se ejecuta
-// //al llegar el evento al servidor
-// socket.emit('createMessage', { from: 'Andrew', text: 'Prueba acknowledgment' }, function (data) {
-//     console.log('Got it', data);
-// });
 
 jQuery('#message-form').on('submit', function (e) {
     e.preventDefault();
@@ -76,12 +73,11 @@ locationButton.on('click', function () {
 
 socket.on('newLocationMessage', function (message) {
     const formattedTime = moment(message.createdAt).format('h:mm a');
-    const li = jQuery('<li></li>');
-    const a = jQuery('<a target="_blank">My current location</a>');
-
-    li.text(`${message.from} ${formattedTime}: `);
-    a.attr('href', message.url);
-    li.append(a);
-
-    jQuery('#messages').append(li);
+    const template = jQuery('#location-message-template').html();
+    const html = Mustache.render(template, {
+        url: message.url,
+        from: message.from,
+        createdAt: formattedTime
+    });
+    jQuery('#messages').append(html);
 });
