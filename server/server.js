@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000;
 
 const { generateMessage, generateLocationMessage } = require('./utils/message.js');
 const { isRealString } = require('./utils/validation');
+const { Users } = require('./utils/users');
 
 //Crear express app
 var app = express();
@@ -25,6 +26,8 @@ var server = http.createServer(app);
 //se puede hacer cualquier acción que implique escuchar o emitir eventos
 var io = socketIO(server);
 
+const users = new Users();
+
 //Configurar middleware estático para html
 app.use(express.static(publicPath));
 
@@ -37,11 +40,15 @@ io.on('connection', (socket) => {
     console.log('New user connected');
     socket.on('join', (params, callback) => {
         if (!isRealString(params.name) || !isRealString(params.room)) {
-            callback('Name and room are required.');
+            return callback('Name and room are required.');
         }
 
         //Se entra el room mediante metodos que provee socket
         socket.join(params.room);
+        users.removeUser(socket.id);
+        users.addUser(socket.id, params.name, params.room);
+
+        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
         //Tambien existe: socket.leave('The office fans')
 
         //Se emite un evento al cliente.
@@ -89,6 +96,12 @@ io.on('connection', (socket) => {
     //registra un listener que se acciona cuando un cliente se desconecta
     socket.on('disconnect', () => {
         console.log('User was disconnected');
+        const user = users.removeUser(socket.id);
+
+        if (user) {
+            io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+            io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`));
+        }
     });
 });
 
