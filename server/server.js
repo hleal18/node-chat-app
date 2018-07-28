@@ -8,6 +8,7 @@ const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
 const { generateMessage, generateLocationMessage } = require('./utils/message.js');
+const { isRealString } = require('./utils/validation');
 
 //Crear express app
 var app = express();
@@ -34,16 +35,31 @@ app.use(express.static(publicPath));
 //todos los sockets o conexiones simultanes que tiene el servidor.
 io.on('connection', (socket) => {
     console.log('New user connected');
+    socket.on('join', (params, callback) => {
+        if (!isRealString(params.name) || !isRealString(params.room)) {
+            callback('Name and room are required.');
+        }
 
-    //Se emite un evento al cliente.
-    //El evento se crea ahí mismo.
-    //Se puede emitir un evento sin datos.
+        //Se entra el room mediante metodos que provee socket
+        socket.join(params.room);
+        //Tambien existe: socket.leave('The office fans')
 
-    //Se emite un evento para la conexión actual haciéndole bienvenida
-    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+        //Se emite un evento al cliente.
+        //El evento se crea ahí mismo.
+        //Se puede emitir un evento sin datos.
 
-    //Se emite un evento para todos los demás sockets menos el actual.
-    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
+        //para apuntar a rooms con el objeto io y socket se puede hacer lo siguiente
+        // io.emit -> io.to('The Office fans').emit
+        // socket.broadcast.emit -> socket.broadcast.to('The Office fans').emit
+
+        //Se emite un evento para la conexión actual haciéndole bienvenida
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+
+        //Se emite un evento para todos los demás sockets menos el actual.
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));        
+
+        callback();
+    });
 
     //Emitir un evento newMessage con from, text y createdAt
     // socket.emit('newMessage', {

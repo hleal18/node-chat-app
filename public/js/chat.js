@@ -24,7 +24,16 @@ function scrollToBottom() {
 //a un servidor.
 socket.on('connect', function () {
     console.log('Connected to server');
-
+    //SocketIO tiene apoyo para rooms y segmentar la comunicación
+    const params = jQuery.deparam(window.location.search);
+    socket.emit('join', params, function(err) {
+        if (err) {
+            alert(err);
+            window.location.href = '/';
+        } else {
+            console.log('No error');
+        }
+    });
     //Emitir un evento, createMessage con datos del texto
     // socket.emit('createMessage', {
     //   from: 'Cuchicuchi',
