@@ -11,7 +11,11 @@ class Users {
 
     removeUser(id) {
         const index = this.users.findIndex((user) => user.id === id);
-        this.users.splice(index, 1);
+        const removedUser = this.users[index];
+        if (index != -1) {
+            this.users.splice(index, 1);
+        }
+        return removedUser;
     }
 
     getUser(id) {
@@ -19,9 +23,9 @@ class Users {
         return user;
     }
 
-    getUsersList(room) {
+    getUserList(room) {
         const usersList = this.users.filter((user) => user.room === room);
-        return usersList;
+        return usersList.map((user) => user.name);
     }
 }
 
