@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
         socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
         //Se emite un evento para todos los demás sockets menos el actual.
-        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));        
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
 
         callback();
     });
@@ -77,10 +77,12 @@ io.on('connection', (socket) => {
 
     //Escuchar un evento createMessage con from, text y crear createdAt
     socket.on('createMessage', (message, callback) => {
-        console.log('createMessage', message);
+        const user = users.getUser(socket.id);
         //io emite eventos a todas las conexiones, a diferencia de socket
         //que lo hace para una conexión
-        io.emit('newMessage', generateMessage(message.from, message.text));
+        if (user && isRealString(message.text)) {
+            io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+        }
         //Internamente enviará un evento al cliente para que se invocque 
         //correctamente el callback
         callback();
@@ -89,8 +91,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('createLocationMessage', (coords) => {
-        console.log('CreateLocationMessage', coords);
-        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+        const user = users.getUser(socket.id);
+        if (user) {
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+        }
     })
 
     //registra un listener que se acciona cuando un cliente se desconecta
